@@ -1,6 +1,11 @@
 /*jshint esversion: 6*/
-let gate = true;
 
+//Muutujate deklareerimine
+let gate = true;
+let help = 0;
+let index = 0;
+
+const lights = ["l1", "l2", "l3","l4","l5","l6","l7","l8","l9","l10","l11","l12","l13","l14","l15","l16"];
 const C4 = new Audio("C4.mp3");
 const Db4 = new Audio("Db4.mp3");
 const D4 = new Audio("D4.mp3");
@@ -19,12 +24,14 @@ const D5 = new Audio("D5.mp3");
 const Eb5 = new Audio("Eb5.mp3");
 const E5 = new Audio("E5.mp3");
 
-//console.clear();
 
+//The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. <URL>
+//Järgnev funktsioon lahendab selle probleemi
 document.documentElement.addEventListener('mousedown', () => {
   if (Tone.context.state !== 'running') Tone.context.resume();
 });
 
+//Sliderite deklareerimine
 let tempoSlider = document.getElementById("tempo");
 var tempoValue = document.getElementById("tempoValue");
 tempoValue.innerHTML = tempoSlider.value + " bpm"; // Display the default slider value
@@ -35,16 +42,14 @@ tempoSlider.oninput = function() {
 
 let reverbSlider = document.getElementById("reverb");
 var reverbValue = document.getElementById("reverbValue");
-reverbValue.innerHTML = reverbSlider.value; // Display the default slider value
-// Update the current slider value (each time you drag the slider handle)
+reverbValue.innerHTML = reverbSlider.value;
 reverbSlider.oninput = function() {
   reverbValue.innerHTML = this.value;
 };
 
 let distorSlider = document.getElementById("distor");
 var distorValue = document.getElementById("distorValue");
-distorValue.innerHTML = distorSlider.value; // Display the default slider value
-// Update the current slider value (each time you drag the slider handle)
+distorValue.innerHTML = distorSlider.value;
 distorSlider.oninput = function() {
   distorValue.innerHTML = this.value;
 };
@@ -77,13 +82,16 @@ tomSlider.oninput = function() {
   tomValue.innerHTML = this.value + " dB";
 };
 
+let celloSlider = document.getElementById("volumeCello");
 let freeverb = new Tone.Freeverb().toMaster();
 freeverb.dampening.value = 1;
 let dist = new Tone.Distortion().toMaster();
 dist.wet.value = 0;
 
+//sequencer funktsioon
 function sequencer(){
-  console.log("Starting");
+
+  //Tone.Playeri abil on võimalik enda soundid importida
   const kick = new Tone.Player("kick.wav").connect(dist).connect(freeverb).toMaster();
   const snare = new Tone.Player("snare-808.wav").connect(dist).connect(freeverb).toMaster();
   const hihat = new Tone.Player("hihat-digital.wav").connect(dist).connect(freeverb).toMaster();
@@ -97,16 +105,18 @@ function sequencer(){
   const celloF3 = new Tone.Player("celloF3.mp3").connect(dist).connect(freeverb).toMaster();
   const celloG3 = new Tone.Player("celloG3.mp3").connect(dist).connect(freeverb).toMaster();
   const celloA3 = new Tone.Player("celloA3.mp3").connect(dist).connect(freeverb).toMaster();
+  const celloNotes = [celloA2,celloB2, celloC3, celloD3, celloE3, celloF3, celloG3, celloA3];
+  let running;
 
-  let index = 0;
-
-  //const kickInputs = document.querySelectorAll(".kick");
-  //const snareInputs = document.querySelectorAll(".snare");
+  //Sequencery funktsioon, kus sisestatud funktsiooni korratakse lõpmatuseni, 16 nooti vältel
   Tone.Transport.scheduleRepeat(play,"16n");
-  Tone.Transport.start();
 
+  //funktsioon mida korratakse
   function play(){
 
+    running = true;
+
+    //Sliderite väärtuse omistamine objektidele
     if(!kick.mute){
       kick.volume.value = kickSlider.value;
     }
@@ -119,11 +129,18 @@ function sequencer(){
     if(!tom.mute){
       tom.volume.value = tomSlider.value;
     }
+
+    for(let i = 0; i < celloNotes.length; i++){
+      celloNotes[i].volume.value = celloSlider.value;
+    }
+
     Tone.Transport.bpm.value = tempoSlider.value;
     freeverb.dampening.value = reverbSlider.value;
     dist.wet.value = distorSlider.value / 100;
-    //console.log(slider.value);
+
+    //querySelectori abil valime kõik 16 childi(inputi) divi seest, omistame nendele Tone.Player objekti
     let step = index % 16;
+    help = step;
     let kickInputs = document.querySelector(`.kick input:nth-child(${step + 1})`);
     let snareInputs = document.querySelector(`.snare input:nth-child(${step + 1})`);
     let hihatInputs = document.querySelector(`.hihat input:nth-child(${step + 1})`);
@@ -137,6 +154,16 @@ function sequencer(){
     let celloG3Inputs = document.querySelector(`.cG3 input:nth-child(${step + 1})`);
     let celloA3Inputs = document.querySelector(`.cA3 input:nth-child(${step + 1})`);
 
+    //taktilugeja, näitab mitmendat childi hetkel käsitletakse
+    document.getElementById(lights[step]).checked=true;
+    setTimeout(function() {
+        document.getElementById(lights[step]).checked=false;
+    }, 130);
+
+
+    //Kui on checkbox checked, siis mängitakse heli
+
+    //Trummi soundid
     if(kickInputs.checked){
       console.log("kick");
       kick.start();
@@ -154,6 +181,7 @@ function sequencer(){
       tom.start();
     }
 
+    //Cello soundid
     if(celloA2Inputs.checked){
       console.log("celloA2");
       celloA2.start();
@@ -190,6 +218,7 @@ function sequencer(){
     index++;
   }
 
+  //Kontrollib kas trummide peamute on aktiive, kui jah siis disable child mutes
   setInterval(function() {
     if(kick.mute || snare.mute || hihat.mute || tom.mute){
       if(gate){
@@ -198,10 +227,11 @@ function sequencer(){
     }else{
       document.getElementById("muteDrums").disabled = false;
     }
-
   }, 100);
 
+  //Event listenerid
 
+  //Peamute
   document.getElementById('muteDrums').addEventListener('click', function(){
     if(kick.mute){
       gate=true;
@@ -224,8 +254,9 @@ function sequencer(){
       hihat.mute = true;
       tom.mute = true;
     }
-
   });
+
+  //Kick mute
   document.getElementById('muteKick').addEventListener('click', function(){
     if(kick.mute){
       kick.mute = false;
@@ -233,6 +264,8 @@ function sequencer(){
       kick.mute = true;
     }
   });
+
+  //Snare mute
   document.getElementById('muteSnare').addEventListener('click', function(){
     if(snare.mute){
       snare.mute = false;
@@ -240,6 +273,8 @@ function sequencer(){
       snare.mute = true;
     }
   });
+
+  //Hihat mute
   document.getElementById('muteHihat').addEventListener('click', function(){
     if(hihat.mute){
       hihat.mute = false;
@@ -247,6 +282,8 @@ function sequencer(){
       hihat.mute = true;
     }
   });
+
+  //Tom mute
   document.getElementById('muteTom').addEventListener('click', function(){
     if(tom.mute){
       tom.mute = false;
@@ -254,9 +291,9 @@ function sequencer(){
       tom.mute = true;
     }
   });
-
 }
 
+//puhastab cello kastid
 document.getElementById('clearCello').addEventListener('click', function(){
   clearChildren(document.getElementById("celloA2"));
   clearChildren(document.getElementById("celloB2"));
@@ -266,17 +303,48 @@ document.getElementById('clearCello').addEventListener('click', function(){
   clearChildren(document.getElementById("celloF3"));
   clearChildren(document.getElementById("celloG3"));
   clearChildren(document.getElementById("celloA3"));
-
 });
 
+//Alustab sequencery
+document.getElementById('start').addEventListener('click', function(){
+    Tone.Transport.start();
+    running = true;
+    document.getElementById(lights[help]).checked=false;
+});
+
+//Paneb Sequencery pausile
+document.getElementById('pause').addEventListener('click', function(){
+    Tone.Transport.pause();
+    running = false;
+    setTimeout(function() {
+        document.getElementById(lights[help]).checked=true;
+    }, 200);
+});
+
+//Restardib sequencery
+document.getElementById('reset').addEventListener('click', function(){
+    index = 0;
+    document.getElementById(lights[help]).checked=false;
+    document.getElementById(lights[0]).checked=true;
+});
+
+//Peatab sequencery
+document.getElementById('stop').addEventListener('click', function(){
+    index = 0;
+    document.getElementById(lights[0]).checked=true;
+    document.getElementById(lights[0]).checked=false;
+    Tone.Transport.stop();
+});
+
+//Puhastab trummide kastid
 function clearDrums() {
-    //document.getElementById("k1").checked=true;
-    console.log("clear");
     clearChildren(document.getElementById("kick"));
     clearChildren(document.getElementById("snare"));
     clearChildren(document.getElementById("hihat"));
     clearChildren(document.getElementById("tom"));
 }
+
+//Trummide stiil 1
 function style1() {
   clearDrums();
   document.getElementById("k1").checked=true;
@@ -298,6 +366,8 @@ function style1() {
   document.getElementById("t1").checked=true;
   document.getElementById("t7").checked=true;
 }
+
+//Trummide stiil 2
 function style2() {
   clearDrums();
   document.getElementById("k1").checked=true;
@@ -311,6 +381,8 @@ function style2() {
   document.getElementById("h9").checked=true;
   document.getElementById("h13").checked=true;
 }
+
+//Trummide stiil 3
 function style3() {
   clearDrums();
   document.getElementById("k12").checked=true;
@@ -335,6 +407,9 @@ function style3() {
   document.getElementById("t15").checked=true;
 }
 
+//Klaver
+
+//Nodeide abil klaveri mängimine
 const playSound = audio => {
   const clone = audio.cloneNode();
   clone.play();
@@ -344,6 +419,8 @@ const playSound = audio => {
   setTimeout(() => (clone.volume = 0.2), 1600);
   setTimeout(() => (clone.volume = 0), 2000);
 };
+
+//Noodid
 
 // C4
 const C4Key = document.querySelector(".C4-key");
@@ -498,6 +575,7 @@ const playE5 = () => {
 };
 E5Key.addEventListener("click", playE5);
 
+//Klaviatuuriga mängimie Eventlistener
 window.addEventListener("keydown", ({ keyCode }) => {
   // Press Q
   if (keyCode === 81) return playC4();
@@ -551,11 +629,14 @@ window.addEventListener("keydown", ({ keyCode }) => {
   if (keyCode === 80) return playE5();
 });
 
+//Dropdown menüü funktsioonid
+
+//Vahetab klassi
 function showStyles() {
   document.getElementById("myDropdown").classList.toggle("show");
 }
 
-// Close the dropdown menu if the user clicks outside of it
+//Sulgeb akna, kui väljaspool menüüd vajutada
 window.onclick = function(event) {
   if (!event.target.matches('.dropbtn')) {
     let dropdowns = document.getElementsByClassName("dropdown-content");
@@ -568,8 +649,8 @@ window.onclick = function(event) {
     }
   }
 };
-
-
+//clearChildren funktsioon
+//Saadud aadressilt:
 //https://gist.github.com/randell/2436981
 function clearChildren(element) {
    for (var i = 0; i < element.childNodes.length; i++) {
@@ -592,10 +673,29 @@ function clearChildren(element) {
    }
 }
 
+//Vahetab klasse, kui mute nuppude peale vajutada.
+function toggleClass(){
+  var element = document.getElementById("muteKick");
+  element.classList.toggle("mystyle");
+}
+function toggleClass2(){
+  var element = document.getElementById("muteSnare");
+  element.classList.toggle("mystyle");
+}
+function toggleClass3(){
+  var element = document.getElementById("muteHihat");
+  element.classList.toggle("mystyle");
+}
+function toggleClass4(){
+  var element = document.getElementById("muteTom");
+  element.classList.toggle("mystyle");
+}
+function toggleClass5(){
+  var element = document.getElementById("muteDrums");
+  element.classList.toggle("mystyle");
+}
 
-
-
-
-
-
+//Alustab sequencery
 sequencer();
+
+console.clear();

@@ -8,10 +8,37 @@
   <link rel='stylesheet' type='text/css' href='style.css'>
   <title>Sequencer application</title>
 </head>
-<body>
-  <div class="slidecontainer">
 
-    <h3>tempo</h3>
+<body>
+<div class="container">
+  <h1>Sequencer</h1>
+  <hr>
+  <button class= "controlButtons" id="start">Start</button>
+  <button class= "controlButtons" id="pause">Pause</button>
+  <button class= "controlButtons" id="reset">Reset</button>
+  <button class= "controlButtons" id="stop">Stop</button>
+  <hr>
+  <div id="light" class="light">
+    <input id="l1" type="checkbox" onclick="return false;">
+    <input id="l2" type="checkbox" onclick="return false;">
+    <input id="l3" type="checkbox" onclick="return false;">
+    <input id="l4" type="checkbox" onclick="return false;">
+    <input id="l5" type="checkbox" onclick="return false;">
+    <input id="l6" type="checkbox" onclick="return false;">
+    <input id="l7" type="checkbox" onclick="return false;">
+    <input id="l8" type="checkbox" onclick="return false;">
+    <input id="l9" type="checkbox" onclick="return false;">
+    <input id="l10" type="checkbox" onclick="return false;">
+    <input id="l11" type="checkbox" onclick="return false;">
+    <input id="l12" type="checkbox" onclick="return false;">
+    <input id="l13" type="checkbox" onclick="return false;">
+    <input id="l14" type="checkbox" onclick="return false;">
+    <input id="l15" type="checkbox" onclick="return false;">
+    <input id="l16" type="checkbox" onclick="return false;">
+  </div>
+  <hr>
+  <div class="slidecontainer">
+    <h3>Tempo</h3>
     <input type="range" min="30" max="240" value="120" class="slider" id="tempo">
     <output id="tempoValue">Tempo</output>
 
@@ -22,24 +49,23 @@
     <h3>Distortion</h3>
     <input type="range" min="0" max="100" value="0" class="slider" id="distor">
     <output id="distorValue">Distortion</output>
+  </div>
 
-</div>
+  <div class="drumControls">
+    <h2>Drums</h2>
+    <div class="dropdown">
+      <button onclick="showStyles()" class="dropbtn">Styles</button>
+      <div id="myDropdown" class="dropdown-content">
+        <button onclick="clearDrums()" class="dropbtn2">Default</button>
+        <button onclick="style1()" class="dropbtn2">Style 1</button>
+        <button onclick="style2()" class="dropbtn2">Style 2</button>
+        <button onclick="style3()" class="dropbtn2">Style 3</button>
+      </div>
+    </div>
+    <button onclick="toggleClass5()" class="muteButtonDrums" id="muteDrums">Mute</button>
+  </div>
 
-<div><h2>Drums</h2>
-  <div class="dropdown">
-    <button onclick="showStyles()" class="dropbtn">Styles</button>
-    <div id="myDropdown" class="dropdown-content">
-      <button onclick="clearDrums()" class="dropbtn2">clear</button>
-      <button onclick="style1()" class="dropbtn2">Style 1</button>
-      <button onclick="style2()" class="dropbtn2">Style 2</button>
-      <button onclick="style3()" class="dropbtn2">Style 3</button>
-    </div>
-    </div>
-  <button id="muteDrums">Mute</button>
-  <ul></ul>
-</div>
   <div class="drums">
-    <p>kick</p>
     <div id="kick" class="kick">
       <input id="k1" type="checkbox">
       <input id="k2" type="checkbox">
@@ -57,12 +83,11 @@
       <input id="k14" type="checkbox">
       <input id="k15" type="checkbox">
       <input id="k16" type="checkbox">
-      <button id="muteKick">mute</button>
+      <button onclick ="toggleClass()" class="muteButton" id="muteKick">mute</button>
       <input type="range" min="-40" max="10" value="0" class="sliderVolume" id="volumeKick">
-      <output id="kickValue">Tempo</output>
+      <output class="drumsOutput" id="kickValue"></output>
     </div>
-    <ul></ul>
-    <p>snare</p>
+    <br>
     <div id="snare" class="snare">
       <input id="s1" type="checkbox">
       <input id="s2" type="checkbox">
@@ -80,14 +105,13 @@
       <input id="s14" type="checkbox">
       <input id="s15" type="checkbox">
       <input id="s16" type="checkbox">
-      <button id="muteSnare">mute</button>
+      <button onclick ="toggleClass2()" class="muteButton" id="muteSnare">mute</button>
       <input type="range" min="-40" max="10" value="0" class="sliderVolume" id="volumeSnare">
-      <output id="snareValue">Tempo</output>
+      <output class="drumsOutput" id="snareValue"></output>
     </div>
-    <p>hihat</p>
-    <ul></ul>
+    <br>
     <div id="hihat" class="hihat">
-      <input id="h1" type="checkbox">
+      <input id="h1" tabindex="2" type="checkbox">
       <input id="h2" type="checkbox">
       <input id="h3" type="checkbox">
       <input id="h4" type="checkbox">
@@ -103,12 +127,11 @@
       <input id="h14" type="checkbox">
       <input id="h15" type="checkbox">
       <input id="h16" type="checkbox">
-      <button id="muteHihat">mute</button>
+      <button onclick ="toggleClass3()" class="muteButton" id="muteHihat">mute</button>
       <input type="range" min="-40" max="10" value="0" class="sliderVolume" id="volumeHihat">
-      <output id="hihatValue">Tempo</output>
+      <output class="drumsOutput" id="hihatValue"></output>
     </div>
-    <p>tom</p>
-    <ul></ul>
+    <br>
     <div id="tom"class="tom">
       <input id="t1" type="checkbox">
       <input id="t2" type="checkbox">
@@ -126,15 +149,19 @@
       <input id="t14" type="checkbox">
       <input id="t15" type="checkbox">
       <input id="t16" type="checkbox">
-      <button id="muteTom">mute</button>
+      <button onclick ="toggleClass4()" class="muteButton" id="muteTom">mute</button>
       <input type="range" min="-40" max="10" value="0" class="sliderVolume" id="volumeTom">
-      <output id="tomValue">Tempo</output>
+      <output class="drumsOutput" id="tomValue"></output>
     </div>
   </div>
-  <h2>Cello</h2>
-  <button id="clearCello">Clear</button>
-  <p>A2</p>
-<ul></ul>
+
+  <div class="celloControls">
+    <h2>Cello</h2>
+    <h3>Audio</h3>
+    <input type="range" min="-40" max="10" value="0" class="sliderVolumeCello" id="volumeCello">
+    <button class = "muteButtonDrums"id="clearCello">Clear</button>
+  </div>
+
   <div class="cello">
     <div id="celloA2" class="cA2">
       <input type="checkbox">
@@ -154,7 +181,7 @@
       <input type="checkbox">
       <input type="checkbox">
     </div>
-    <p>B2</p>
+    <br>
     <div id="celloB2" class="cB2">
       <input type="checkbox">
       <input type="checkbox">
@@ -173,7 +200,7 @@
       <input type="checkbox">
       <input type="checkbox">
     </div>
-    <p>C3</p>
+    <br>
     <div id="celloC3" class="cC3">
       <input type="checkbox">
       <input type="checkbox">
@@ -192,7 +219,7 @@
       <input type="checkbox">
       <input type="checkbox">
     </div>
-    <p>D3</p>
+    <br>
     <div id="celloD3" class="cD3">
       <input type="checkbox">
       <input type="checkbox">
@@ -211,7 +238,7 @@
       <input type="checkbox">
       <input type="checkbox">
     </div>
-    <p>E3</p>
+    <br>
     <div id="celloE3" class="cE3">
       <input type="checkbox">
       <input type="checkbox">
@@ -230,7 +257,7 @@
       <input type="checkbox">
       <input type="checkbox">
     </div>
-    <p>F3</p>
+    <br>
     <div id="celloF3" class="cF3">
       <input type="checkbox">
       <input type="checkbox">
@@ -249,7 +276,7 @@
       <input type="checkbox">
       <input type="checkbox">
     </div>
-    <p>G3</p>
+    <br>
     <div id="celloG3" class="cG3">
       <input type="checkbox">
       <input type="checkbox">
@@ -268,7 +295,7 @@
       <input type="checkbox">
       <input type="checkbox">
     </div>
-    <p>A3</p>
+    <br>
     <div id="celloA3" class="cA3">
       <input type="checkbox">
       <input type="checkbox">
@@ -288,42 +315,44 @@
       <input type="checkbox">
     </div>
   </div>
-
-  <div class="piano">
-    <button class="white-key C4-key"></button>
-    <button class="black-key Db4-key"></button>
-    <button class="white-key D4-key"></button>
-    <button class="black-key Eb4-key"></button>
-    <button class="white-key E4-key"></button>
-    <button class="white-key F4-key"></button>
-    <button class="black-key Gb4-key"></button>
-    <button class="white-key G4-key"></button>
-    <button class="black-key Ab4-key"></button>
-    <button class="white-key A4-key"></button>
-    <button class="black-key Bb4-key"></button>
-    <button class="white-key B4-key"></button>
-    <button class="white-key C5-key"></button>
-    <button class="black-key Db5-key"></button>
-    <button class="white-key D5-key"></button>
-    <button class="black-key Eb5-key"></button>
-    <button class="white-key E5-key"></button>
+  <br>
+  <div id="pianoContainer">
+    <h2>Piano</h2>
+    <div class="piano">
+      <button class="white-key C4-key"></button>
+      <button class="black-key Db4-key"></button>
+      <button class="white-key D4-key"></button>
+      <button class="black-key Eb4-key"></button>
+      <button class="white-key E4-key"></button>
+      <button class="white-key F4-key"></button>
+      <button class="black-key Gb4-key"></button>
+      <button class="white-key G4-key"></button>
+      <button class="black-key Ab4-key"></button>
+      <button class="white-key A4-key"></button>
+      <button class="black-key Bb4-key"></button>
+      <button class="white-key B4-key"></button>
+      <button class="white-key C5-key"></button>
+      <button class="black-key Db5-key"></button>
+      <button class="white-key D5-key"></button>
+      <button class="black-key Eb5-key"></button>
+      <button class="white-key E5-key"></button>
+    </div>
   </div>
 
-<script src="Tone.js"></script>
-<script src="index.js"></script>
+</div>
 
+<script src="Tone.js"></script>
+<script src="index.js"></script>>
 <script>
  if ('serviceWorker' in navigator) {
-    console.log("Will the service worker register?");
+    //console.log("Will the service worker register?");
     navigator.serviceWorker.register('service-worker.js')
       .then(function(reg){
-        console.log("Yes, it did.");
+        //console.log("Yes, it did.");
      }).catch(function(err) {
-        console.log("No it didn't. This happened:", err)
+        //console.log("No it didn't. This happened:", err)
     });
  }
 </script>
 </body>
-
-
 </html>
